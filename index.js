@@ -2,18 +2,17 @@ var has = Object.prototype.hasOwnProperty
 
 module.exports = photocopy
 
-function photocopy (toCopy, fn) {
-  var results = new (toCopy.constructor || Object)
-
+function photocopy (original, fn, copy) {
+  copy || (copy = new (original.constructor || Object))
   fn || (fn = identity)
 
-  for (var i in toCopy) {
-    if (has.call(toCopy, i)) {
-      results[i] = fn.call(toCopy, toCopy[i], i)
+  for (var i in original) {
+    if (has.call(original, i)) {
+      copy[i] = fn.call(copy, original[i], i)
     }
   }
 
-  return results
+  return copy
 }
 
 function identity (a) {
