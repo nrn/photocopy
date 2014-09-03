@@ -52,3 +52,7 @@ console.log(copyOfA, squaredArray, args, intenseDog)
 
 ```
 
+##License: ISC
+
+Copyright 2014 Nick Niemeir <nick.niemeir@gmail.com>
+
