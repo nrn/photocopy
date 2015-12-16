@@ -1,4 +1,4 @@
-var has = Object.prototype.hasOwnProperty
+var reduce = require('universal-reduce')
 
 module.exports = photocopy
 
@@ -6,16 +6,16 @@ function photocopy (original, fn, copy) {
   copy || (copy = new (original.constructor || Object))
   fn || (fn = identity)
 
-  for (var i in original) {
-    if (has.call(original, i)) {
-      copy[i] = fn.call(copy, original[i], i)
-    }
-  }
+  return reduce(original, photo(fn), copy)
+}
 
-  return copy
+function photo (fn) {
+  return function (copy, value, key) {
+    copy[key] = fn.call(copy, value, key)
+    return copy
+  }
 }
 
 function identity (a) {
   return a
 }
-

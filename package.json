@@ -24,6 +24,8 @@
   "homepage": "https://github.com/nrn/photocopy",
   "devDependencies": {
     "tape": "^2.13.4"
+  },
+  "dependencies": {
+    "universal-reduce": "^2.0.0"
   }
 }
-
