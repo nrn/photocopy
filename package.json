@@ -1,7 +1,7 @@
 {
   "name": "photocopy",
-  "version": "1.0.1",
-  "description": "Iterate any object and return a modified copy.",
+  "version": "2.0.0",
+  "description": "Iterate anything and return a modified copy.",
   "main": "index.js",
   "scripts": {
     "test": "node test.js"

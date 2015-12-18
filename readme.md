@@ -1,46 +1,98 @@
 # photocopy
 
-Create a shallow copy of an object or array, optionally providing a function
-to modify each property as they are copied.
+A weird little iteration library.
 
 `npm install photocopy`
 
-## copy = photocopy(original[, modifier[, paper]])
+## copy = photocopy(original[, transform[, seed[, collect]]])
 
-original is the object to copy properties off of.
+`original` is the collection to iterate over.
 
-modifier is an optional function to map over the
-properties. Return the value for the copied object.
-Called with (value, key). Defaults to the identity function.
+`transform` is a function that takes the next step in a process, and
+returns a reducing function. That reducing function is called
+once per step, and calls the next step in the process 0 or more times.
+Defaults to the identity transform.
 
-paper is the optional object to copy properties onto.
-If not specified we try to build an object with
-`new original.constructor`, if that doesn't exist we use
-`new Object`.
+`seed` is the value to reduce into.  By default we try to build a seed
+the same type as original with `new original.constructor`, if that
+doesn't exist we use a standard object.
+
+`collect` is the final step in the process, which puts new values into
+the accumulated value. Defaults to trying to match something compatible
+with the seed value (even if seed itself was defaulted). Falls back to
+generically adding properties to the seed.
+
+## transforms
+
+### pc.map(fn)
+
+Takes a function that gets (value, key), and returns the new value.
+
+### pc.keyMap(fn)
+
+Takes a function that gets (value, key), and returns the new key.
+
+### pc.filter(fn)
+
+Takes a function that gets (value, key), and returns truthy to keep, falsy
+to skip.
+
+### pc.cat
+
+Unwraps collections into their individual values/keys.
+
+### pc.identity
+
+Passes things through unchanged.
+
+## Utilities
+
+### pc.byKey
+
+A collecting function that creates arrays of values, stored
+by key on an object.
+
+### comp(fn, fn) // takes any number of functions
+
+Compose transforms together.
+
+### simple(fn)
+
+The easiest way to make a simple transform creator. Takes a function
+that will be called with (f, next, acc, val, key), and returns a
+function that should be called with the 'f' value. Should apply f and
+next in various ways to acc, val, and key.
+
+### reduced(final)
+
+When you want to fast track processing to the end, return reduced(final)
+from any step in the process, and final will be returned as the final
+product. No more steps are iterated. Do not pass go, do not collect
+$200.
 
 ## example
 
 ```javascript
 
-var photocopy = require('photocopy')
+var pc = require('photocopy')
 
 // shallow copy
-var copyOfA = photocopy({ a: 1, b: 2 })
+var copyOfA = pc({ a: 1, b: 2 })
 
 // map/forEach
-var squaredArray = photocopy([ 3, 4, 5 ], function (val) { return val * val })
+var squaredArray = pc([ 3, 4, 5 ], pc.map(function (val) { return val * val }))
 
 // array-like to array
 var args
 ;(function () {
-  args = photocopy(arguments, null, [])
+  args = pc(arguments, null, [])
 })(1, 2, 3)
 
 // transformed copy
 
-function Dog () { this.says = 'bark'; this.weight = 45; this.name = 'foo';}
+function Dog () { this.says = 'bark'; this.weight = 45; this.name = 'foo' }
 
-var intenseDog = photocopy(new Dog (), transform)
+var intenseDog = pc(new Dog(), pc.map(transform))
 intenseDog instanceof Dog // true
 
 function transform (val, key) {
@@ -52,7 +104,21 @@ console.log(copyOfA, squaredArray, args, intenseDog)
 
 ```
 
+## Hostory
+
+This library evolved from only being able to run a map on an object, to
+applying arbitrary transformations to any collection. It is largely
+inspired by transducers, but doesn't interoperate with other JS transducer
+libraries. The biggest reason is that photocopy supports keys as an extra
+argument, instead of wrapping some collections in [ key, value ] arrays. It
+also works as variable argument functions, instead of making the initialized
+transducers objects with weird private properties.
+
+Also the top level API feels a lot more comfortable to me, and we don't provide
+a lot of uncommonly used transforms, instead leaving you the fun of
+implementing them for yourself.
+
 ##License: ISC
 
-Copyright 2014 Nick Niemeir <nick.niemeir@gmail.com>
+Copyright 2015 Nick Niemeir <nick.niemeir@gmail.com>
 
