@@ -104,7 +104,7 @@ console.log(copyOfA, squaredArray, args, intenseDog)
 
 ```
 
-## Hostory
+## History
 
 This library evolved from only being able to run a map on an object, to
 applying arbitrary transformations to any collection. It is largely
@@ -118,7 +118,7 @@ Also the top level API feels a lot more comfortable to me, and we don't provide
 a lot of uncommonly used transforms, instead leaving you the fun of
 implementing them for yourself.
 
-##License: ISC
+## License: ISC
 
 Copyright 2015 Nick Niemeir <nick.niemeir@gmail.com>
 
