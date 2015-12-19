@@ -34,7 +34,7 @@ test('iterate-all', function (t) {
   }
   var flat = pc(deep, pc.comp(pc.cat, incKey, pc.filter(notA4)), {})
   t.deepEqual(flat, {a1: 1, a2: 2, a3: 3, a5: 'b', a6: 'c'}, 'weeeee')
-  t.deepEqual(pc(flat, pc.keyMap(() => 'a'), {}, pc.byKey()),
+  t.deepEqual(pc(flat, pc.keyMap(() => 'a'), {}, pc.byKey),
     {a: [1, 2, 3, 'b', 'c']},
     'Partition by key'
   )

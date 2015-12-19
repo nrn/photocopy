@@ -14,9 +14,7 @@ function photocopy (original, tx, seed, step) {
 }
 
 function identity (next) {
-  return function (acc, value, key) {
-    return next(acc, value, key)
-  }
+  return next
 }
 
 function cat (next) {
@@ -38,15 +36,15 @@ var keyMap = simple(function (fn, next, acc, val, key) {
 })
 
 photocopy({
-  identity,
-  cat,
-  simple,
-  filter,
-  map,
-  keyMap,
-  reduced,
-  byKey,
-  comp
+  identity: identity,
+  cat: cat,
+  simple: simple,
+  filter: filter,
+  map: map,
+  keyMap: keyMap,
+  reduced: reduced,
+  byKey: byKey,
+  comp: comp
 }, null, photocopy)
 
 function byKey (acc, value, key) {
