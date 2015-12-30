@@ -1,3 +1,5 @@
+var done = require('./done')
+
 module.exports = getStep
 
 function getStep (type) {
@@ -19,25 +21,40 @@ function getStep (type) {
 }
 
 function objectStep (acc, value, key) {
+  if (done(acc, value, key)) {
+    return acc
+  }
   acc[key] = value
   return acc
 }
 
 function setStep (acc, value, key) {
+  if (done(acc, value, key)) {
+    return acc
+  }
   acc.add(value)
   return acc
 }
 
 function mapStep (acc, value, key) {
+  if (done(acc, value, key)) {
+    return acc
+  }
   acc.set(key, value)
   return acc
 }
 
 function arrayStep (acc, value, key) {
+  if (done(acc, value, key)) {
+    return acc
+  }
   acc.push(value)
   return acc
 }
 
 function addStep (acc, value, key) {
+  if (done(acc, value, key)) {
+    return acc
+  }
   return acc + value
 }

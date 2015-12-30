@@ -2,15 +2,24 @@ var reduce = require('universal-reduce')
 var reduced = reduce.reduced
 
 var getStep = require('./get-step')
+var done = require('./done')
 
 module.exports = photocopy
 
 function photocopy (original, tx, seed, step) {
   if (typeof tx !== 'function') tx = identity
-  if (typeof seed === 'undefined') seed = new (original.constructor || Object)
+  if (typeof seed === 'undefined') {
+    seed = new (original.constructor || Object)
+  }
   if (typeof step !== 'function') step = getStep(seed)
-
-  return reduce(original, tx(step), seed)
+  // Initialize transducer
+  var transducer = tx(step)
+  // apply to the collection
+  var acc = reduce(original, transducer, seed)
+  // flush remaining state.
+  var finalVal = transducer(acc)
+  if (finalVal instanceof reduced) return finalVal.val
+  return finalVal
 }
 
 function identity (next) {
@@ -44,10 +53,14 @@ photocopy({
   keyMap: keyMap,
   reduced: reduced,
   byKey: byKey,
-  comp: comp
+  comp: comp,
+  done: done
 }, null, photocopy)
 
 function byKey (acc, value, key) {
+  if (done(acc, value, key)) {
+    return acc
+  }
   var arr = acc[key] || (acc[key] = [])
   arr.push(value)
   return acc
@@ -58,8 +71,9 @@ function simple (setup) {
     return function (next) {
       // setup state here
       return function (acc, val, key) {
-        if (typeof acc === 'undefined' || acc instanceof reduced) return next(acc, val, key)
-        if (typeof val === 'undefined') return next(acc, val, key)
+        if (done(acc, val, key)) {
+          return next.apply(null, arguments)
+        }
         return setup(fn, next, acc, val, key)
       }
     }

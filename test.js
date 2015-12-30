@@ -1,20 +1,55 @@
 var test = require('tape')
+var reduce = require('universal-reduce')
 var pc = require('./index')
+var done = require('./done')
 
 function incKey (next) {
   var inc = 0
   return function (acc, value, key) {
+    if (done(acc, value, key)) {
+      return next(acc)
+    }
     inc += 1
     return next(acc, value, 'a' + inc)
   }
 }
 
+function pair (next) {
+  var isFirst = true
+  var first
+  return function (acc, value, key) {
+    if (!isFirst) {
+      isFirst = true
+      return next(acc, [first, value], key)
+    } else {
+      isFirst = false
+      first = value
+      return acc
+    }
+  }
+}
+
 test('iterate-all', function (t) {
-  var a = pc([1, 2, 3], function (i) { return i })
+  var a = pc([1, 2, 3], pc.map(function (i) { return i }))
   t.equal(a[1], 2, 'map identity over array')
 
   var b = pc([1, 2, 3])
   t.equal(b[0], 1, 'map identity over array by default')
+
+  t.deepEqual(pc([1, 2, 3, 4], pair), [[1, 2], [3, 4]], 'even pair')
+  t.deepEqual(pc([1, 2, 3], pair), [[1, 2], [3, undefined]], 'uneven pair')
+
+  function all (next) {
+    return function (acc, val, key) {
+      if (done(acc, val, key)) {
+        return next(acc)
+      }
+      if (!val) return reduce.reduced(false)
+      return next(acc, val, key)
+    }
+  }
+
+  t.equal(pc([true, false, true], all, true), false, 'early reduce')
 
   var obj = {a: 1, b: 2}
   var c = pc(obj, pc.map(function (v, k) { return k + v }))
