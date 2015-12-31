@@ -45,21 +45,25 @@ var keyMap = simple(function (fn, next, acc, val, key) {
 })
 
 function take (n) {
-  var i = 0
-  return filter(function () {
-    if (i >= n) return false
-    i += 1
-    return true
-  })
+  return function (next) {
+    var i = 0
+    return function (acc, val, key) {
+      if (i >= n) return acc
+      i += 1
+      return next(acc, val, key)
+    }
+  }
 }
 
 function skip (n) {
-  var i = 0
-  return filter(function () {
-    if (i >= n) return true
-    i += 1
-    return false
-  })
+  return function (next) {
+    var i = 0
+    return function (acc, val, key) {
+      if (i >= n) return next(acc, val, key)
+      i += 1
+      return acc
+    }
+  }
 }
 
 photocopy({
