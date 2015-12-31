@@ -93,5 +93,10 @@ test('iterate-all', function (t) {
   t.equal(add.foo, wrappedAdd.foo, 'props transfered')
   t.equal(add(1, 2), wrappedAdd(1, 2), 'work the same')
 
+  t.deepEqual(pc([1, 2, 3], pc.take(1)), [ 1 ], 'take')
+  t.deepEqual(pc(tmp, pc.take(1), {}), { 1: 'a' }, 'take obj')
+  t.deepEqual(pc([1, 2, 3], pc.skip(2)), [ 3 ], 'skip')
+  t.deepEqual(pc(tmp, pc.skip(2), {}), { 3: 'c' }, 'skip obj')
+
   t.end()
 })

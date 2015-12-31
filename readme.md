@@ -4,6 +4,8 @@ A weird little iteration library.
 
 `npm install photocopy`
 
+After the readme, check out the usage examples in the [x folder](x)!
+
 ## copy = photocopy(original[, transform[, seed[, collect]]])
 
 `original` is the collection to iterate over.
@@ -37,6 +39,14 @@ Takes a function that gets (value, key), and returns the new key.
 Takes a function that gets (value, key), and returns truthy to keep, falsy
 to skip.
 
+### pc.take(num)
+
+Take the first `num` items.
+
+### pc.skip(num)
+
+Skip the first `num` items.
+
 ### pc.cat
 
 Unwraps collections into their individual values/keys.
@@ -62,6 +72,11 @@ The easiest way to make a simple transform creator. Takes a function
 that will be called with (f, next, acc, val, key), and returns a
 function that should be called with the 'f' value. Should apply f and
 next in various ways to acc, val, and key.
+
+### done(acc, value, key)
+
+Test to see if acc is reduced, or value and key are both undefined.
+Useful to know if the transducing process is done.
 
 ### reduced(final)
 

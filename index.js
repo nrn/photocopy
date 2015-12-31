@@ -44,6 +44,24 @@ var keyMap = simple(function (fn, next, acc, val, key) {
   return next(acc, val, fn(val, key))
 })
 
+function take (n) {
+  var i = 0
+  return filter(function () {
+    if (i >= n) return false
+    i += 1
+    return true
+  })
+}
+
+function skip (n) {
+  var i = 0
+  return filter(function () {
+    if (i >= n) return true
+    i += 1
+    return false
+  })
+}
+
 photocopy({
   identity: identity,
   cat: cat,
@@ -54,7 +72,9 @@ photocopy({
   reduced: reduced,
   byKey: byKey,
   comp: comp,
-  done: done
+  done: done,
+  take: take,
+  skip: skip
 }, null, photocopy)
 
 function byKey (acc, value, key) {
