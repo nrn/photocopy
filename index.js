@@ -48,6 +48,9 @@ function take (n) {
   return function (next) {
     var i = 0
     return function (acc, val, key) {
+      if (done(acc, val, key)) {
+        return next.apply(null, arguments)
+      }
       if (i >= n) return acc
       i += 1
       return next(acc, val, key)
@@ -59,6 +62,9 @@ function skip (n) {
   return function (next) {
     var i = 0
     return function (acc, val, key) {
+      if (done(acc, val, key)) {
+        return next.apply(null, arguments)
+      }
       if (i >= n) return next(acc, val, key)
       i += 1
       return acc
