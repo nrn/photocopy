@@ -62,9 +62,10 @@ Passes things through unchanged.
 A collecting function that creates arrays of values, stored
 by key on an object.
 
-### comp(fn, fn) // takes any number of functions
+### comp(fn0[, fn1[,...fnN]]) // takes any number of functions
 
-Compose transforms together.
+Compose transforms together, to be run in order left to right on
+each item.
 
 ### simple(fn)
 

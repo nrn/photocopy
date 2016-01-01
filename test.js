@@ -37,7 +37,8 @@ test('iterate-all', function (t) {
   t.equal(b[0], 1, 'map identity over array by default')
 
   t.deepEqual(pc([1, 2, 3, 4], pair), [[1, 2], [3, 4]], 'even pair')
-  t.deepEqual(pc([1, 2, 3], pair), [[1, 2], [3, undefined]], 'uneven pair')
+  // also tests single item compose
+  t.deepEqual(pc([1, 2, 3], pc.comp(pair)), [[1, 2], [3, undefined]], 'uneven pair')
 
   function all (next) {
     return function (acc, val, key) {
@@ -52,7 +53,8 @@ test('iterate-all', function (t) {
   t.equal(pc([true, false, true], all, true), false, 'early reduce')
 
   var obj = {a: 1, b: 2}
-  var c = pc(obj, pc.map(function (v, k) { return k + v }))
+  // also tests single item compose
+  var c = pc(obj, pc.comp(pc.map(function (v, k) { return k + v })))
   t.equal(c.b, 'b2', 'modify object while copying')
   obj.b = false
   t.equal(c.b, 'b2', 'confirm copy')

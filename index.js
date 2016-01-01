@@ -1,5 +1,4 @@
 var reduce = require('universal-reduce')
-var reduced = reduce.reduced
 
 var getStep = require('./get-step')
 var done = require('./done')
@@ -17,7 +16,10 @@ function photocopy (original, tx, seed, step) {
   // apply to the collection
   var acc = reduce(original, transducer, seed)
   // flush remaining state.
+  if (acc instanceof reduced) return acc.val
+
   var finalVal = transducer(acc)
+  if (finalVal instanceof reduce.reduced) return finalVal.val.val
   if (finalVal instanceof reduced) return finalVal.val
   return finalVal
 }
@@ -28,7 +30,7 @@ function identity (next) {
 
 function cat (next) {
   return function (acc, value, key) {
-    return reduce(value, next, acc)
+    return photocopy(value, null, acc, next)
   }
 }
 
@@ -122,4 +124,12 @@ function fnStep (acc, value, key) {
   return function (next) {
     return acc(value(next))
   }
+}
+
+function reduced (val) {
+  if (!(this instanceof reduced)) {
+    return new reduced(val)
+  }
+  this.val = val
+  return reduce.reduced(this)
 }

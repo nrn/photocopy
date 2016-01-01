@@ -1,6 +1,6 @@
 {
   "name": "photocopy",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Iterate anything and return a modified copy.",
   "main": "index.js",
   "scripts": {
@@ -13,8 +13,10 @@
   "keywords": [
     "iterate",
     "map",
+    "filter",
     "forEach",
-    "copy"
+    "copy",
+    "transduce"
   ],
   "author": "Nick Niemeir <nick.niemeir@gmail.com>",
   "license": "ISC",
