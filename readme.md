@@ -127,7 +127,8 @@ inspired by transducers, but doesn't interoperate with other JS transducer
 libraries. The biggest reason is that photocopy supports keys as an extra
 argument, instead of wrapping some collections in [ key, value ] arrays. It
 also works as variable argument functions, instead of making the initialized
-transducers objects with weird private properties.
+transducers objects with weird private properties. Does not support arity
+0 to get a seed value from a step function.
 
 Also the top level API feels a lot more comfortable to me, and we don't provide
 a lot of uncommonly used transforms, instead leaving you the fun of

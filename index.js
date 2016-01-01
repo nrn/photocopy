@@ -111,10 +111,15 @@ function simple (setup) {
 }
 
 function comp () {
-  var args = Array.prototype.slice.call(arguments)
+  return photocopy(arguments, null, null, fnStep)
+}
+
+function fnStep (acc, value, key) {
+  if (acc == null) return value
+  if (done(acc, value, key)) {
+    return acc
+  }
   return function (next) {
-    return args.reduceRight(function (acc, fn) {
-      return fn(acc)
-    }, next)
+    return acc(value(next))
   }
 }
