@@ -82,7 +82,7 @@ test('iterate-all', function (t) {
 
   ;(function () {
     t.equal(pc(arguments)[2], 3, 'arguments object')
-    t.ok(Array.isArray(pc(arguments, null, [])), 'arguments to array')
+    t.ok(Array.isArray(pc(arguments, pc.identity, [])), 'arguments to array')
   }(1, 2, 3))
 
   var d = { foo: 'bar' }

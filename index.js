@@ -41,7 +41,7 @@ function cat (next) {
     if (done(acc, value, key)) {
       return next.apply(null, arguments)
     }
-    return photocopy(value, null, acc, next)
+    return photocopy(value, identity, acc, next)
   }
 }
 
@@ -51,7 +51,7 @@ function steamroll (next) {
       return next.apply(null, arguments)
     }
     if (value == null || typeof value in basic) return next(acc, value, key)
-    return photocopy(value, null, acc, inner)
+    return photocopy(value, identity, acc, inner)
   }
 }
 
@@ -109,7 +109,7 @@ photocopy({
   done: done,
   take: take,
   skip: skip
-}, null, photocopy)
+}, identity, photocopy)
 
 function byKey (acc, value, key) {
   if (done(acc, value, key)) {
@@ -135,7 +135,7 @@ function simple (setup) {
 }
 
 function comp () {
-  return photocopy(arguments, null, null, fnStep)
+  return photocopy(arguments, identity, null, fnStep)
 }
 
 function fnStep (acc, value, key) {
