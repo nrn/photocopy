@@ -51,6 +51,10 @@ Skip the first `num` items.
 
 Unwraps collections into their individual values/keys.
 
+### pc.steamroll
+
+Recursively unwraps nested collections into their leaf node values/keys.
+
 ### pc.identity
 
 Passes things through unchanged.
@@ -101,7 +105,7 @@ var squaredArray = pc([ 3, 4, 5 ], pc.map(function (val) { return val * val }))
 // array-like to array
 var args
 ;(function () {
-  args = pc(arguments, null, [])
+  args = pc(arguments, pc.identity, [])
 })(1, 2, 3)
 
 // transformed copy
@@ -137,5 +141,5 @@ implementing them for yourself.
 
 ## License: ISC
 
-Copyright 2015 Nick Niemeir <nick.niemeir@gmail.com>
+Copyright 2016 Nick Niemeir <nick.niemeir@gmail.com>
 
