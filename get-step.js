@@ -9,7 +9,7 @@ function getStep (type) {
   if (typeof type === 'string' || typeof type === 'number') {
     return addStep
   }
-  if (typeof type.size !== 'undefined') {
+  if (typeof type.size === 'number') {
     if (typeof type.add === 'function') {
       return setStep
     }

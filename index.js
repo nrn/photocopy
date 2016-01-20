@@ -3,6 +3,14 @@ var reduce = require('universal-reduce')
 var getStep = require('./get-step')
 var done = require('./done')
 
+var basic = {
+  'string': true,
+  'number': true,
+  'boolean': true,
+  'symbol': true,
+  'function': true
+}
+
 module.exports = photocopy
 
 function photocopy (original, tx, seed, step) {
@@ -30,7 +38,20 @@ function identity (next) {
 
 function cat (next) {
   return function (acc, value, key) {
+    if (done(acc, value, key)) {
+      return next.apply(null, arguments)
+    }
     return photocopy(value, null, acc, next)
+  }
+}
+
+function steamroll (next) {
+  return function inner (acc, value, key) {
+    if (done(acc, value, key)) {
+      return next.apply(null, arguments)
+    }
+    if (value == null || typeof value in basic) return next(acc, value, key)
+    return photocopy(value, null, acc, inner)
   }
 }
 
@@ -77,6 +98,7 @@ function skip (n) {
 photocopy({
   identity: identity,
   cat: cat,
+  steamroll: steamroll,
   simple: simple,
   filter: filter,
   map: map,

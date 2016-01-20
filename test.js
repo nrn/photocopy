@@ -75,6 +75,10 @@ test('iterate-all', function (t) {
     {a: [1, 2, 3, 'b', 'c']},
     'Partition by key'
   )
+  tmp.set(4, [ 'd' ])
+  deep.add('e')
+
+  t.deepEqual(pc(deep, pc.steamroll, []), [ 1, 2, 3, 'a', 'b', 'c', 'd', 'e' ], 'fully steamrolled')
 
   ;(function () {
     t.equal(pc(arguments)[2], 3, 'arguments object')
@@ -100,7 +104,7 @@ test('iterate-all', function (t) {
   t.deepEqual(pc(tmp, take1, {}), { 1: 'a' }, 'take obj')
   var skip2 = pc.skip(2)
   t.deepEqual(pc([1, 2, 3], skip2), [ 3 ], 'skip')
-  t.deepEqual(pc(tmp, skip2, {}), { 3: 'c' }, 'skip obj')
+  t.deepEqual(pc(tmp, skip2, {}), { 3: 'c', 4: [ 'd' ] }, 'skip obj')
 
   t.end()
 })
