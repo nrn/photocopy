@@ -21,15 +21,12 @@ function photocopy (original, tx, seed, step) {
   if (typeof step !== 'function') step = getStep(seed)
   // Initialize transducer
   var transducer = tx(step)
-  // apply to the collection
-  var acc = reduce(original, transducer, seed)
-  // flush remaining state.
-  if (acc instanceof reduced) return acc.val
 
-  var finalVal = transducer(acc)
-  if (finalVal instanceof reduce.reduced) return finalVal.val.val
-  if (finalVal instanceof reduced) return finalVal.val
-  return finalVal
+  return reduce.unwrap(
+    transducer(
+      reduce(original, transducer, seed)
+    )
+  )
 }
 
 function identity (next) {
@@ -149,9 +146,5 @@ function fnStep (acc, value, key) {
 }
 
 function reduced (val) {
-  if (!(this instanceof reduced)) {
-    return new reduced(val)
-  }
-  this.val = val
-  return reduce.reduced(this)
+  return reduce.reduced(reduce.reduced(val))
 }

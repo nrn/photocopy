@@ -51,6 +51,18 @@ test('iterate-all', function (t) {
   }
 
   t.equal(pc([true, false, true], all, true), false, 'early reduce')
+  var symbols = {}
+  var aaa = Symbol('aaa')
+  symbols[aaa] = 'a'
+  symbols[Symbol('bbb')] = 'b'
+  symbols[Symbol('ccc')] = 'c'
+  symbols.foo = 'bar'
+  symbols[1] = 'baz'
+
+  t.deepEqual(pc(symbols)[aaa], 'a', 'Copies symbol')
+  t.deepEqual(pc(symbols, pc.filter(function (v, k) { return typeof k === 'symbol' }), []),
+        ['a', 'b', 'c'], 'filters by key type')
+  t.deepEqual(pc(symbols, pc.identity, []), ['baz', 'bar', 'a', 'b', 'c'], 'in order')
 
   var obj = {a: 1, b: 2}
   // also tests single item compose

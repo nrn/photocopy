@@ -6,7 +6,7 @@ function done (acc, value, key) {
   return (
     (typeof value === 'undefined' &&
      typeof value === 'undefined') ||
-    acc instanceof reduce.reduced
+    (reduce.isReduced(acc))
   )
 }
 
