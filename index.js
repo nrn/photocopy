@@ -92,6 +92,48 @@ function skip (n) {
   }
 }
 
+function sort (fn) {
+  return function (next) {
+    var internal = []
+    return function (acc, val, key) {
+      if (done(acc, val, key)) {
+        return next(depthFirst(internal, next, acc))
+      }
+      place([key, val], internal, fn)
+      return acc
+    }
+  }
+}
+
+function depthFirst (arr, next, acc) {
+  if (reduce.isReduced(acc)) return acc
+  if (typeof arr[1] !== 'undefined') {
+    acc = depthFirst(arr[1], next, acc)
+    if (reduce.isReduced(acc)) return acc
+  }
+  if (typeof arr[0] !== 'undefined') {
+    acc = next(acc, arr[0][1], arr[0][0])
+    if (reduce.isReduced(acc)) return acc
+  }
+  if (typeof arr[2] !== 'undefined') {
+    acc = depthFirst(arr[2], next, acc)
+    if (reduce.isReduced(acc)) return acc
+  }
+  return acc
+}
+
+function place (item, tree, compare) {
+  if (typeof tree[0] === 'undefined') {
+    tree[0] = item
+    return
+  }
+  if (compare(item[1], tree[0][1], item[0], tree[0][0]) < 0) {
+    place(item, tree[1] || (tree[1] = []), compare)
+  } else {
+    place(item, tree[2] || (tree[2] = []), compare)
+  }
+}
+
 photocopy({
   identity: identity,
   cat: cat,
@@ -105,7 +147,8 @@ photocopy({
   comp: comp,
   done: done,
   take: take,
-  skip: skip
+  skip: skip,
+  sort: sort
 }, identity, photocopy)
 
 function byKey (acc, value, key) {
