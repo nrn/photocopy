@@ -133,5 +133,18 @@ test('iterate-all', function (t) {
     pc.map(function (val, key) { return +key })
   )), [ 1, 3, 5, 6, 7, 10, 11 ], 'really stable')
 
+  t.deepEqual(
+    pc(
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      pc.cond(
+        (val, key) => !(val % 3 === 0 || key === '9'),
+        pc.identity,
+        pc.skip(1)
+      )
+    ),
+    [1, 2, 4, 5, 7, 8],
+    'conditional transform'
+  )
+
   t.end()
 })

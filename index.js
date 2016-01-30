@@ -92,6 +92,16 @@ function skip (n) {
   }
 }
 
+function cond (condition, ifTrue, ifFalse) {
+  ifFalse = ifFalse != null ? ifFalse : identity
+  return function (next) {
+    return function (acc, val, key) {
+      var fn = condition(val, key) ? ifTrue : ifFalse
+      return fn(next)(acc, val, key)
+    }
+  }
+}
+
 function sort (fn) {
   return function (next) {
     var internal = []
@@ -144,6 +154,7 @@ photocopy({
   keyMap: keyMap,
   reduced: reduced,
   byKey: byKey,
+  cond: cond,
   comp: comp,
   done: done,
   take: take,
