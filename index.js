@@ -24,7 +24,7 @@ function photocopy (original, tx, seed, step) {
 
   return reduce.unwrap(
     transducer(
-      reduce(original, transducer, seed)
+      reduce._reduce(original, transducer, seed)
     )
   )
 }
@@ -142,7 +142,7 @@ photocopy({
   filter: filter,
   map: map,
   keyMap: keyMap,
-  reduced: reduced,
+  reduced: reduce.reduced,
   byKey: byKey,
   comp: comp,
   done: done,
@@ -188,6 +188,3 @@ function fnStep (acc, value, key) {
   }
 }
 
-function reduced (val) {
-  return reduce.reduced(reduce.reduced(val))
-}
