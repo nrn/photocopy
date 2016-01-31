@@ -18,6 +18,15 @@ function pair (next) {
   var isFirst = true
   var first
   return function (acc, value, key) {
+    if (reduce.isReduced(acc)) {
+      return next.apply(null, arguments)
+    }
+    if (done(acc, value, key)) {
+      if (!isFirst) {
+        acc = next(acc, [first, value], key)
+      }
+      return next(acc)
+    }
     if (!isFirst) {
       isFirst = true
       return next(acc, [first, value], key)
@@ -132,6 +141,41 @@ test('iterate-all', function (t) {
     pc.filter(function (val) { return val === 2 }),
     pc.map(function (val, key) { return +key })
   )), [ 1, 3, 5, 6, 7, 10, 11 ], 'really stable')
+
+  t.deepEqual(
+    pc(
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      pc.cond(
+        (val, key) => !(val % 3 === 0 || key === '9'),
+        pc.identity,
+        next => acc => acc // black hole
+      )
+    ),
+    [1, 2, 4, 5, 7, 8],
+    'conditional transform'
+  )
+
+  t.deepEqual(
+    pc(
+      [1, 3, 1, 8, 2, 2, 4, 1, 6], pc.comp(
+      pc.cond(
+        (val, key) => val % 2 === 0,
+        pc.sort((a, b) => a - b),
+        pc.comp(pc.skip(1), pair)
+      ),
+      (next) => (acc, val, key) => {
+        if (reduce.isReduced(acc)) {
+          return next.apply(null, arguments)
+        }
+        if (done(acc, val, key)) {
+          return next(acc, 'doh', 'only_once')
+        }
+        return next(acc, val, key)
+      }
+    )),
+    [[3, 1], 2, 2, 4, 6, 8, [1, undefined], 'doh'],
+    'Stateful transforms in both branches of cond.'
+  )
 
   t.end()
 })
