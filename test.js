@@ -139,7 +139,7 @@ test('iterate-all', function (t) {
       pc.cond(
         (val, key) => !(val % 3 === 0 || key === '9'),
         pc.identity,
-        pc.skip(1)
+        next => acc => acc // black hole
       )
     ),
     [1, 2, 4, 5, 7, 8],
