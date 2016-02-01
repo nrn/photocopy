@@ -94,13 +94,32 @@ function skip (n) {
 
 function cond (condition, ifTrue, ifFalse) {
   ifFalse = ifFalse != null ? ifFalse : identity
+
   return function (next) {
+    next = condNextWrapper(next)
     ifTrue = ifTrue(next)
     ifFalse = ifFalse(next)
+
     return function (acc, val, key) {
+      if (done(acc, val, key)) {
+        return ifFalse(ifTrue(acc, val, key))
+      }
       var fn = condition(val, key) ? ifTrue : ifFalse
       return fn(acc, val, key)
     }
+  }
+}
+
+function condNextWrapper (next) {
+  var isFirstBranch = true
+
+  return function (acc, val, key) {
+    if (done(acc, val, key) && isFirstBranch) {
+      isFirstBranch = false
+      return acc
+    }
+
+    return next(acc, val, key)
   }
 }
 
