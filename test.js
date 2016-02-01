@@ -148,7 +148,7 @@ test('iterate-all', function (t) {
       pc.cond(
         (val, key) => !(val % 3 === 0 || key === '9'),
         pc.identity,
-        next => acc => acc // black hole
+        pc.filter(function () { return false })
       )
     ),
     [1, 2, 4, 5, 7, 8],
@@ -163,14 +163,16 @@ test('iterate-all', function (t) {
         pc.sort((a, b) => a - b),
         pc.comp(pc.skip(1), pair)
       ),
-      (next) => (acc, val, key) => {
-        if (reduce.isReduced(acc)) {
-          return next.apply(null, arguments)
+      function (next) {
+        return function (acc, val, key) {
+          if (reduce.isReduced(acc)) {
+            return next.apply(null, arguments)
+          }
+          if (done(acc, val, key)) {
+            return next(acc, 'doh', 'only_once')
+          }
+          return next(acc, val, key)
         }
-        if (done(acc, val, key)) {
-          return next(acc, 'doh', 'only_once')
-        }
-        return next(acc, val, key)
       }
     )),
     [[3, 1], 2, 2, 4, 6, 8, [1, undefined], 'doh'],
