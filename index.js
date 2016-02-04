@@ -14,6 +14,10 @@ var basic = {
 module.exports = photocopy
 
 function photocopy (original, tx, seed, step) {
+  return reduce.unwrap(_photocopy(original, tx, seed, step))
+}
+
+function _photocopy (original, tx, seed, step) {
   if (typeof tx !== 'function') tx = identity
   if (typeof seed === 'undefined') {
     seed = new (original.constructor || Object)
@@ -22,11 +26,7 @@ function photocopy (original, tx, seed, step) {
   // Initialize transducer
   var transducer = tx(step)
 
-  return reduce.unwrap(
-    transducer(
-      reduce._reduce(original, transducer, seed)
-    )
-  )
+  return transducer(reduce._reduce(original, transducer, seed))
 }
 
 function identity (next) {
@@ -137,18 +137,17 @@ function sort (fn) {
 }
 
 function depthFirst (arr, next, acc) {
-  if (reduce.isReduced(acc)) return acc
-  if (typeof arr[1] !== 'undefined') {
+  // follow left fork
+  if (typeof arr[1] !== 'undefined' && !reduce.isReduced(acc)) {
     acc = depthFirst(arr[1], next, acc)
-    if (reduce.isReduced(acc)) return acc
   }
-  if (typeof arr[0] !== 'undefined') {
+  // output this node
+  if (typeof arr[0] !== 'undefined' && !reduce.isReduced(acc)) {
     acc = next(acc, arr[0][1], arr[0][0])
-    if (reduce.isReduced(acc)) return acc
   }
-  if (typeof arr[2] !== 'undefined') {
+  // follow right fork
+  if (typeof arr[2] !== 'undefined' && !reduce.isReduced(acc)) {
     acc = depthFirst(arr[2], next, acc)
-    if (reduce.isReduced(acc)) return acc
   }
   return acc
 }
@@ -180,7 +179,8 @@ photocopy({
   done: done,
   take: take,
   skip: skip,
-  sort: sort
+  sort: sort,
+  _photocopy: _photocopy
 }, identity, photocopy)
 
 function byKey (acc, value, key) {
