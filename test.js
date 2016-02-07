@@ -179,5 +179,15 @@ test('iterate-all', function (t) {
     'Stateful transforms in both branches of cond.'
   )
 
+  var j = 30000
+  var lots = new Array(j)
+  var lotsQ = new Array(j)
+  for (var i = 0; i < j; i++) {
+    lotsQ[i] = lots[i] = Math.random() * j
+  }
+  lotsQ.sort(function (a, b) { return a - b })
+  lots = pc(lots, pc.comp(numSort, numSort), [])
+  t.same(lots, lotsQ, 'Sorts the same as native sort')
+
   t.end()
 })
