@@ -1,4 +1,5 @@
 var done = require('./done')
+var reduce = require('universal-reduce')
 
 module.exports = sort
 
@@ -19,6 +20,7 @@ function sort (fn) {
 function seqRead (root, next, acc) {
   var node = root
   var path = []
+  if (!root || reduce.isReduced(acc)) return acc
 
   while (node.left) {
     path.push(node)
@@ -26,6 +28,7 @@ function seqRead (root, next, acc) {
   }
   node = splay(path, node)
   acc = next(acc, node.value, node.key)
+  if (reduce.isReduced(acc)) return acc
 
   while (node.right) {
     path = [node]
@@ -36,6 +39,7 @@ function seqRead (root, next, acc) {
     }
     node = splay(path, node)
     acc = next(acc, node.value, node.key)
+    if (reduce.isReduced(acc)) return acc
   }
   return acc
 }
@@ -89,17 +93,19 @@ function splay (path, root) {
 }
 
 function place (key, val, compare, node, path) {
-  if (!node) {
-    node = new SplayNode(key, val)
+  var side = ''
+  while (node) {
     path.push(node)
-    return node
+    if (compare(val, node.value, key, node.key) < 0) {
+      side = 'left'
+    } else {
+      side = 'right'
+    }
+    node = node[side]
   }
+  node = new SplayNode(key, val)
+  if (path.length) path[path.length - 1][side] = node
   path.push(node)
-  if (compare(val, node.value, key, node.key) < 0) {
-    node.left = place(key, val, compare, node.left, path)
-  } else {
-    node.right = place(key, val, compare, node.right, path)
-  }
   return node
 }
 
