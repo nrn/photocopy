@@ -1,18 +1,28 @@
 var done = require('./done')
 var reduce = require('universal-reduce')
 
+var not = {
+  left: 'right',
+  right: 'left'
+}
+
 module.exports = sort
 
 function sort (fn) {
   return function (next) {
     var root = null
     return function (acc, val, key) {
-      var path = []
       if (done(acc, val, key)) {
         return next(seqRead(root, next, acc))
       }
-      root = place(key, val, fn, root, path)
-      root = splay(path, path.pop())
+      // var path = []
+      // root = place(key, val, fn, root, path)
+      // root = splay(path, path.pop())
+      var toInsert = new SplayNode(key, val)
+      var state = split(root, toInsert, fn, { left: null, right: null })
+      toInsert.left = state.left
+      toInsert.right = state.right
+      root = toInsert
       return acc
     }
   }
@@ -90,6 +100,61 @@ function splay (path, root) {
   }
 
   return root
+}
+
+function split (gp, i, compare, state) {
+  var tmp
+  var par
+  var node
+  var first
+  var second
+  while (gp) {
+    tmp = par = node = null
+    first = second = ''
+    if (compare(i.value, gp.value, i.key, gp.key) < 0) {
+      first = 'left'
+    } else {
+      first = 'right'
+    }
+    par = gp[first]
+    if (!par) {
+      zig(first, state, gp)
+      gp = null
+    } else {
+      if (compare(i.value, par.value, i.key, par.key) < 0) {
+        second = 'left'
+      } else {
+        second = 'right'
+      }
+
+      node = par[second]
+
+      if (first === second) {
+        tmp = par[not[first]]
+        par[not[first]] = gp
+        gp[first] = tmp
+
+        zig(first, state, par)
+      } else {
+        zig(first, state, gp)
+        zig(second, state, par)
+      }
+      gp = node
+    }
+  }
+  return state
+}
+function zig (dir, state, node) {
+  node[dir] = null
+  if (state[not[dir]]) {
+    var branch = state[not[dir]]
+    while (branch[dir]) {
+      branch = branch[dir]
+    }
+    branch[dir] = node
+  } else {
+    state[not[dir]] = node
+  }
 }
 
 function place (key, val, compare, node, path) {
