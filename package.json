@@ -1,6 +1,6 @@
 {
   "name": "photocopy",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "Iterate anything and return a modified copy.",
   "main": "index.js",
   "scripts": {
@@ -29,6 +29,6 @@
   },
   "dependencies": {
     "universal-reduce": "^3.1.0",
-    "splay": "0.0.2"
+    "splay": "0.0.3"
   }
 }

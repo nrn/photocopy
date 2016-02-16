@@ -160,7 +160,7 @@ test('iterate-all', function (t) {
       [1, 3, 1, 8, 2, 2, 4, 1, 6], pc.comp(
       pc.cond(
         (val, key) => val % 2 === 0,
-        pc.sort((a, b) => a - b),
+        numSort,
         pc.comp(pc.skip(1), pair)
       ),
       function (next) {

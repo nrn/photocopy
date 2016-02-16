@@ -9,12 +9,9 @@ function sort (fn) {
     var root = null
     return function (acc, val, key) {
       if (done(acc, val, key)) {
-        splay.seqRead(root, function (node) {
-          if (!reduce.isReduced(acc)) {
-            acc = next(acc, node.value, node.key)
-          }
-        })
-        return next(acc)
+        return next(reduce._reduce(splay.seqRead(root), function (iacc, node) {
+          return next(iacc, node.value, node.key)
+        }, acc))
       }
       root = splay.insert(root, new splay.Node(key, val), fn)
       return acc
