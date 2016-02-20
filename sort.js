@@ -6,15 +6,26 @@ module.exports = sort
 
 function sort (fn) {
   return function (next) {
-    var root = null
+    var root = splay.empty
+    var sortBy = compareor(fn)
     return function (acc, val, key) {
       if (done(acc, val, key)) {
-        return next(reduce._reduce(splay.seqRead(root), function (iacc, node) {
-          return next(iacc, node.value, node.key)
-        }, acc))
+        root.forEach(function (item) {
+          if (!reduce.isReduced(acc)) {
+            acc = next(acc, item.value, item.key)
+          }
+        })
+        return next(acc)
       }
-      root = splay.insert(root, new splay.Node(key, val), fn)
+      root = root.insert({ key: key, value: val }, sortBy)
       return acc
     }
   }
 }
+
+function compareor (fn) {
+  return function (a, b) {
+    return fn(a.value, b.value, a.key, b.key)
+  }
+}
+

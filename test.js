@@ -127,11 +127,11 @@ test('iterate-all', function (t) {
   t.deepEqual(pc([1, 2, 3], skip2), [ 3 ], 'skip')
   t.deepEqual(pc(tmp, skip2, {}), { 3: 'c', 4: [ 'd' ] }, 'skip obj')
 
-  var numSort = pc.sort(function (av, bv, ak, bk) {
-    return av - bv
+  var numSort = pc.sort(function (a, b) {
+    return a - b
   })
 
-  t.deepEqual(pc(new Set([3, 2, 1, 4]), numSort, []), [1, 2, 3, 4], 'numeric sort')
+  t.deepEqual(pc(new Set([3, 2, 5, 1, 4]), numSort, []), [1, 2, 3, 4, 5], 'numeric sort')
 
   t.deepEqual(pc([1, 2, 3, 2, 1, 2, 2, 2, 4, 1, 2, 2], pc.comp(
     numSort,
