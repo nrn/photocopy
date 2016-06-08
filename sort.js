@@ -6,8 +6,7 @@ module.exports = sort
 
 function sort (fn) {
   return function (next) {
-    var root = splay.empty
-    var sortBy = compareor(fn)
+    var root = splay(compareor(fn))
     return function (acc, val, key) {
       if (done(acc, val, key)) {
         root.forEach(function (item) {
@@ -17,7 +16,7 @@ function sort (fn) {
         })
         return next(acc)
       }
-      root = root.insert({ key: key, value: val }, sortBy)
+      root = root.insert({ key: key, value: val })
       return acc
     }
   }
